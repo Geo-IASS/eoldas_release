@@ -65,7 +65,7 @@ If you plan to contribute to the codebase, it's recommended that you fork the re
 Experiment 1 ( Savitzky-Golay smoothing)
 ==============================================
 
-The first example (in  `here <http://www2.geog.ucl.ac.uk/~plewis/eoldas/eoldas_guide.html>'_) runs a Savitzky-Golay filter over some MODIS NDVI data. The script is ``savitzy_golay.py``, and it requires the file ``data/FuentesAndalucia_MOD09A1.txt`` that holds the data. You run the script by issuing the command ``python savitzky_golay.py``. This will pop a window, that when closed will save the plot to the images directory (this directory will be created if it doesn't exist). This plot should correspond to `this one <http://www2.geog.ucl.ac.uk/~plewis/eoldas/_images/golay.png>`_
+The first example (in  `here <http://www2.geog.ucl.ac.uk/~plewis/eoldas/eoldas_guide.html>'_) runs a Savitzky-Golay filter over some MODIS NDVI data. The script is ``savitzky_golay.py``, and it requires the file ``data/FuentesAndalucia_MOD09A1.txt`` that holds the data. You run the script by issuing the command ``python savitzky_golay.py``. This will pop a window, that when closed will save the plot to the images directory (this directory will be created if it doesn't exist). This plot should correspond to `this one <http://www2.geog.ucl.ac.uk/~plewis/eoldas/_images/golay.png>`_
 
 Experiment 2 (EOLDAS with an identity operator)
 ====================================================
@@ -101,17 +101,17 @@ Experiment 4 (RT observation operators )
 
 Radiative transfer modelling for optical remote sensing. In `this experiment <http://www2.geog.ucl.ac.uk/~plewis/eoldas/example2.html>`_, we will use the semidiscrete model to invert and forward model real observations from spaceborne sensors. The first experiment gets a single observation from MERIS (15 bands in the visible/near-infrared range), and inverts this observation. The command to run it is: ::
 
-~/.local/bin/eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/meris_single.conf --parameter.limits='[[232,232,1]]' --calc_posterior_unc
+    eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/meris_single.conf --parameter.limits='[[232,232,1]]' --calc_posterior_unc
 
 The solution will appear in ``output/meris/``, where you can find both the text files and plots that are in the users' guide.
 
 A second example uses the results from the first, and uses the estimated state of the land surface to provide a prediction of the reflectance that would be seen by the MODIS sensor on that same day. This is then compared to the actual observations. The command is ::
 
-~/.local/bin/eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/meris_single.conf --parameter.limits='[[232,232,1]]' --passer --conf=config_files/modis_single.conf 
+    eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/meris_single.conf --parameter.limits='[[232,232,1]]' --passer --conf=config_files/modis_single.conf 
 
 Other experiments in that section are: ::
 
-~/.local/bin/eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/meris_single.conf --parameter.limits='[[232,232,1]]' --passer --conf=config_files/modis_single_a.conf 
+    eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/meris_single.conf --parameter.limits='[[232,232,1]]' --passer --conf=config_files/modis_single_a.conf 
 
 (the output for this will be in e.g. ``output/modis/MODIS_WW_1_A_1.fwd_a.plot.y.png``). The following experiment will be ::
     
@@ -130,16 +130,24 @@ Experiment 5 (time series assimilation using observation operator )
 Experiment 5.1
 ******************
 
+This is the first experiment that loads the library directly, rather than using the wrapper code ``eoldas_run.py``.  It solves for a set of biophysical model parameters for each day of the year using MODIS surface reflectance data. It can take some time to run, but you can speed up operation and testing a bit by increasing ``dayStep  = 2`` to e.g. ``dayStep  = 16``.
+
 This experiment is the same as in the webpage, but with different initialisation methods, prior ranges etc. We hope to expand the user's guide with more comment. The experiment is contained in a single python script, ``modisDa0.py``, and can be executed by calling it as ``python modisDa0.py``.
+
+You can watch the parameter estimates progress by viewing the interim plots e.g. ``output/gamma50.000000/state.dat.plot.x.png``.
 
 Experiment 5.2
 ******************
 
 The current experiment expands on the previous experiments by demonstrating how the smoothing constraint is applied to a problem where a complex observation operator is used to model the observations. The details of this experiment are `in this page <http://www2.geog.ucl.ac.uk/~plewis/eoldas/example3.html>`_ . The first example can be performed by the following command (it takes around 30-45 minutes)::
-    
-~/.local/bin/eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/semid_default.conf --logfile=logs/file.log --parameter.result.filename=output/gamma2/state.dat --operator.obs.y.result.filename=output/gamma2/obs.dat --parameter.x.default=2,0.99,5,0.01,0.99,0.001,0.99,0.35,1.5,1,0.001,0,0,5 --operator.obs.y.state=data/brdf_WW_1_A_1.kernelFiltered.dat
 
-You will see results appearing in ``output/gamma2``. In particular, the state that we are solving for appears in ``output/gamma2/state.dat.plot.x.png`` (for the plot) and ``output/gamma2/state.dat`` for the raw data. Also note that in this example, the posterior covariance matrix and Hessian have not been calculated.
+
+    eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/semid_default.conf --logfile=logs/file.log --parameter.result.filename=output/gamma2/state.dat --operator.obs.y.result.filename=output/gamma2/obs.dat --parameter.x.default=2,0.99,5,0.01,0.99,0.001,0.99,0.35,1.5,1,0.001,0,0,5 --parameter.solve=0,1,0,0,1,1,1,1,1,1,1,0,0,0 --parameter.limits='[[1,365,16]]' --operator.obs.y.state=data/brdf_WW_1_A_1.kernelFiltered.dat --operator.prior.y.sd=0.33,0.33,0.33,0.33,0.33,0.33,0.33,0.33,0.33,0.33,0.33,0.33,0.33 --operator.prior.y.state=0.99,5.0,0.01,0.99,0.001,0.99,0.35,1.0,1,0.001,0.001,0.001,5 --operator.modelt.rt_model.model_order=1 --optimisation.gtol=0.5
+
+You will see results appearing in ``output/gamma2``. In particular, the state that we are solving for appears in ``output/gamma2/state.dat.plot.x.png`` (for the plot) and ``output/gamma2/state.dat`` for the raw data. Also note that in this example, the posterior covariance matrix and Hessian have not been calculated and that we have deliberately set the optimisation tolerance high (so it will terminate earlier).
+If you watch the information in the log file (e.g. on unix ``tail -f logs/file.log``) you will see that for this value of gamma, the differential model cost is low (``eoldas.solver.eoldas.solver-modelt-x``) and the observational cost (``eoldas.solver.eoldas.solver-obs-x``) decreases quite rapidly to around 5400. With a low gamma, the degree of smoothness is low, so the mo
+del fits better to the observations.
+
 
 .. note::
    
