@@ -155,6 +155,6 @@ To run: ::
 
     eoldas_run.py --conf=config_files/eoldas_config.conf --conf=config_files/sentinel.conf --logfile=logs/file1.log
 
-In `config_files/sentinel.conf`, we initialise state using the file `data/rse1_init.dat` (to spped things up here). The synthetic Sentinel-2 MSI observations are in the file `data/rse1_test.100.dat`.
+In ``config_files/sentinel.conf``, we initialise state using the file ``data/rse1_init.dat`` (to spped things up here). The synthetic Sentinel-2 MSI observations are in the file `data/rse1_test.100.dat`.
 
 
