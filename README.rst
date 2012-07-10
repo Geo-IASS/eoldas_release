@@ -157,4 +157,5 @@ To run: ::
 
 In ``config_files/sentinel.conf``, we initialise state using the file ``data/rse1_init.dat`` (to spped things up here). The synthetic Sentinel-2 MSI observations are in the file `data/rse1_test.100.dat`.
 
+You can view the results as they process in e.g. ``output/rse1/rse1_test.dat.plot.x.png``.
 
